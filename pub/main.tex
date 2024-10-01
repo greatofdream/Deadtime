@@ -1,0 +1,65 @@
+\documentclass[a4paper,10pt]{article}
+% full-width
+\usepackage[margin=1in]{geometry}
+
+% for the figure size adjusting
+\newcommand{\LF}{1}
+\newcommand{\MF}{0.6}
+\newcommand{\SF}{0.49}
+% font of math
+\usepackage{amsmath,amssymb,siunitx,mhchem,calligra,bm}
+% elements of the document
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{threeparttable}
+\usepackage{multirow}
+\usepackage{subcaption}
+\usepackage{authblk}
+% biblatex
+\usepackage{biblatex}
+\addbibresource{ref.bib}
+% line number
+\usepackage{lineno}
+\begin{document}
+
+    \title{Dead time correction for the inhomogeneous Poisson process}
+
+    \author[a,b,c]{Aiqiang Zhang\thanks{zhangaq19@mails.tsinghua.edu.cn}}%
+    
+
+    \author[a,b,c]{Benda Xu}%
+    \author[a,b,c]{Zhe Wang}
+    \author[a,b,c]{Shaomin Chen}
+
+    \affil[a]{
+        organization={Department of Engineering Physics},
+        addressline={Tsinghua University}, 
+        city={Beijing},
+        postcode={100084},
+        country={China}}
+    \affil[b]{
+        organization={Center for High Energy Physics},
+        addressline={Tsinghua University}, 
+        city={Beijing},
+        postcode={100084},
+        country={China}}
+    \affil[c]{
+        organization={Key Laboratory of Particle \& Radiation Imaging (Tsinghua University)},
+        addressline={Ministry of Education},
+        country={China}}
+\maketitle
+\begin{abstract}
+The correction of dead time.
+\end{abstract}
+\linenumbers
+\input{Introduction}
+\input{Correction}
+\input{Inference}
+\input{Conclusion}
+\printbibliography
+\appendix
+\input{Appendix}
+\end{document}
+
+
