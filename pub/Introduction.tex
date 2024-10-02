@@ -1,22 +1,27 @@
 \section{Introduction}
-There are two types of the dead time: paralyzable and nonparalyzable response. For the input homogeneous Poisson process with rate $R$, the observed rate $R^m$ are~\cite{muller19942} 
-	The dead time extend by the lost PE in the dead time window.
-	The dead time does not extend by other lost PE.
 
-For the paralyzable response
+Due to the processes of the detector or the associated electronics, the events in a time interval (\textit{dead time}) following a preceding event are omit~\cite{Knoll:2000fj}. There are two basic types of the dead time behavior: \textit{paralyzable} and \textit{nonparalyzable} response~\cite{müller1973deadtime,muller:1994,Knoll:2000fj}. The true events in the fixed dead time $T_D$ are lost and does not affect the length of the dead time for the nonparalyzable response. While for the paralyzable response, the dead time is still $T_D$ for an observed event but the dead interval will be extended by the true event in the dead period by another dead time $T_D$. The homogeneous Poisson process describes the counting process with a constant event rate $R$ for the infinite timing scale. The observed rate $R^m$ for the paralyzable and nonparalyzable response are~\cite{muller:1994}
 \begin{equation}
-	R^m=Re^{-RT_\mathrm{dead}}
-\end{equation}
-However, to inference the $R$ from $R_m$ need to solve the equation, which could be approximated with series~\cite{muller19942}. Besides, there exist two possible solution for the $R$
-
-For the nonparalyzable response
-\begin{equation}
-	R^m=R(1-R^mT_\mathrm{dead})
-\end{equation}
-It is easy to inference $R$ from $R_m$ use above equation.
-For the nonparalyzable response to calculate the correction $R_m$ from $R$
-\begin{equation}
-	R^m=R(1+RT_\mathrm{dead})
+\begin{aligned}
+	R^{m,\mathrm{para}}&=Re^{-RT_\mathrm{dead}}\\
+	R^{m,\mathrm{non}}&=\frac{R}{1+RT_D}
+\end{aligned}.
 \end{equation}
 
-The interval densities and the statistics of the homogeneous Poisson process also be investigated enough.
+To inference the $R$ from $R^{m,\mathrm{para}}$ need to solve the equation, which could be approximated with the series~\cite{muller:1994}. Besides, there exist two possible solutions for the $R$. For the nonparalyzable response the observed rate is $R=R^{m,\mathrm{non}}/(1-R^{m,\mathrm{non}}T_D)$. The interval densities and the counting statistics of the observed event number of the paralyzable and nonparalyzable response for the homogeneous Poisson process given by Muller using the renewal processes~\cite{müller1973deadtime,muller:1994,yu:2000mean,pomme:2015uncertainty}.
+
+For the finite trains of pulse with a const event rate in the interval $[0,T]$, the mean observed event rate is researched by Cormack using the probability $P_n(T)$ of the n-th observed pulse~\cite{Cormack:1962}:
+\begin{equation}
+\overline{R}^m=\sum_{n=1}^{k}{nP_n(T)}
+\end{equation}
+in which $(k-1)T_D<T<kT_D$.
+
+Many fields considers the time dependent signal intensity corrected by the dead time. The inhomogeneous Poisson process is suitable for the event rate varies versus time $R(t)$. Vannucci et.al. use $\overline{R}^{m,\mathrm{non}}=\int_{t_l}^{t_r}{R(t)/\left(1+R(t)T_D\right)dt}$ to approximate the expected number and variance of observed events in the interval $[t_l,t_r]$ for the nonparalyzable response~\cite{Vannucci:1978,Vannucci:1981}, which is under the assumption of slow variance of the $R(t)$. This coarse approximation is used or mentioned by some old publicationabout doubly stochastic Poisson process with dead time~\cite{Saleh:1981,Teich:2000}.
+
+The close form of the interval densities of inhomogeneous Poisson process is difficult to obtain except in very specific cases~\cite{Picinbono:2009output}. The interval distribution with random dead times is calculated using numerical method by Peterson et.al~\cite{Peterson:2021numerical}. However, the expression of $R^m(t)$ is useful to constructed likelihood but there is no similar research.
+
+Verma .et.al used MCMC method to inference $R(t)$ from the observed events with random dead times, which works not well for high flux~\cite{Verma:2017inhomogeneous}.
+
+% other reseachs about dead time: Combination of the dead times
+
+In this work we concentrate on the fix dead time. Sec.2 gives the precise expression of the $R^m(t)$ for the paralyzable and nonparalyzable response. Sec.3. elucidate the method to inference the true event rate $R(t)$ with the impressive performance. Finally, the conclusion and prospect are shown in Sec.

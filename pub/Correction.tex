@@ -39,14 +39,15 @@ Therefore,
 \end{equation}
 That means we need know the expresion of $R^m$ in the interval $[t-2T_D,t-T_D]$. When the signal is local, the $R^m$ is $b^m$ before signal. The solution for the nonlyzable response in the first dead time window:
 \begin{equation}
-	\mathcal{R}^{m,\mathrm{non}}=\mathcal{R}e^{-\int_{L}^t{\mathcal{R}dt}}(1-b^mT_D+b^m\int^{t}_{L}{e^{\int_{L}^{t'}{\mathcal{R}(t')dt'}}dt'})
+	\mathcal{R}^{m,\mathrm{non}}=\mathcal{R}e^{-\int_{L}^t{\mathcal{R}dt}}(1-b^mT_D+b^m\int^{t}_{L}{e^{\int_{L}^{t'}{\mathcal{R}(t')dt'}}dt})
 \end{equation}
 The expression in the following dead time window could be calculated iteratively one by one.
 
 \subsection{Probability in the interval}
-Note the interval as $[T_L, T_R]$, the number of the observed hit and true hit are $N^{o}, N^{i}$. The expected number of observed hit is
+Note the interval as $[T_L, T_R]$, the number of the observed hit and true hit are $N^{o}, N^{i}$. The expected number of observed hit is 
 \begin{equation}
 \begin{aligned}
+E(N^{o})&=\int_{T_L}^{T_R}{\mathcal{R}^m(t)dt}\\
 E(N^{o,\mathrm{para}})&=\int_{T_L}^{T_R}{\mathcal{R}(t)e^{-\int_{t-T_D}^{t}{\mathcal{R}(t')dt'}}dt}\\
 E(N^{o,\mathrm{non}})&=\int_{T_L}^{T_R}{\mathcal{R}(t)(1-\int_{t-T_D}^{t}{\mathcal{R}^{m,\mathrm{non}}(t')dt'})dt}
 \end{aligned}
@@ -81,16 +82,31 @@ For nonlyzable response, when $N^i>0$, there exist a observed hit $t\in[T_L-T_D,
 \begin{equation}
 \begin{aligned}
 P&(N^i>0,N^o=0)\\
-&=\int_{T_L-T_D}^{T_L}{\mathcal{R}(t)(1-\int_{t-T_D}^{t}{\mathcal{R}^m(t')dt'})(1-e^{-\int_{T_L}^{min(T_R,t+T_D)}{\mathcal{R}(t')dt'}})e^{-\int_{min(T_R,t+T_D)}^{T_R}{\mathcal{R}(t')dt'}}dt}\\
-&=\int_{T_L-T_D}^{T_L}{\mathcal{R}(t)(1-\int_{t-T_D}^{t}{\mathcal{R}^m(t')dt'})(e^{-\int_{min(T_R,t+T_D)}^{T_R}{\mathcal{R}(t')dt'}}-e^{-\int_{T_L}^{T_R}{\mathcal{R}(t')dt'}})dt}\\
+&=\int_{T_L-T_D}^{T_L}{\mathcal{R}(t)\left(1-\int_{t-T_D}^{t}{\mathcal{R}^m(t')dt'}\right)\left(1-e^{-\int_{T_L}^{min(T_R,t+T_D)}{\mathcal{R}(t')dt'}}\right)e^{-\int_{min(T_R,t+T_D)}^{T_R}{\mathcal{R}(t')dt'}}dt}\\
+&=\int_{T_L-T_D}^{T_L}{\mathcal{R}(t)\left(1-\int_{t-T_D}^{t}{\mathcal{R}^m(t')dt'}\right)\left(e^{-\int_{min(T_R,t+T_D)}^{T_R}{\mathcal{R}(t')dt'}}-e^{-\int_{T_L}^{T_R}{\mathcal{R}(t')dt'}}\right)dt}\\
 \end{aligned}
 \end{equation}
 when $T_R-T_L\geq T_D$,
 \begin{equation}
 \begin{aligned}
 P&(N^i>0,N^o=0)\\
-&=
+&=\int_{T_L-T_D}^{T_L}{\mathcal{R}^m(t)e^{-\int_{t+T_D}^{T_R}{\mathcal{R}(t')dt'}}dt}-\int_{T_L-T_D}^{T_L}{\mathcal{R}^m(t)dt}e^{-\int_{T_L}^{T_R}{\mathcal{R}(t')dt'}}\\
+&=\left(\int_{T_L}^{T_L+T_D}{\mathcal{R}^m(t-T_D)e^{\int_{T_L}^{t}{\mathcal{R}(t')dt'}}dt}-\int_{T_L-T_D}^{T_L}{\mathcal{R}^m(t)dt}\right)e^{-\int_{T_L}^{T_R}{\mathcal{R}(t')dt'}} Equ6\\
+&=\int_{T_L}^{T_L+T_D}{\mathcal{R}(t)e^{\int_{T_L}^{t}{\mathcal{R}(t')dt'}}dt}e^{-\int_{T_L}^{T_R}{\mathcal{R}(t')dt'}} -\int_{T_L}^{T_L+T_D}{\mathcal{R}^m(t)dt}\\
+&= e^{\int_{T_R}^{T_L+T_D}{\mathcal{R}(t')dt'}} - e^{-\int_{T_L}^{T_R}{\mathcal{R}(t')dt'}}-\int_{T_L}^{T_L+T_D}{\mathcal{R}^m(t)dt}
+\end{aligned}
+\end{equation}
+when $T_R-T_L\leq T_D$,
+\begin{equation}
+\begin{aligned}
+P&(N^i>0,N^o=0)\\
+&=\int_{T_L-T_D}^{T_R-T_D}{\mathcal{R}^m(t)e^{-\int_{t+T_D}^{T_R}{\mathcal{R}(t')dt'}}dt}+\int_{T_R-T_D}^{T_L}{\mathcal{R}^m(t)dt}-\int_{T_L-T_D}^{T_L}{\mathcal{R}^m(t)dt}e^{-\int_{T_L}^{T_R}{\mathcal{R}(t')dt'}}\\
+&= e^{\int_{T_R}^{T_L+T_D}{\mathcal{R}(t')dt'}} - e^{-\int_{T_L}^{T_R}{\mathcal{R}(t')dt'}}-\int_{T_L}^{T_L+T_D}{\mathcal{R}^m(t)dt}-\int_{T_R-T_D}^{T_L}{\mathcal{R}^m(t)e^{-\int_{t+T_D}^{T_R}{\mathcal{R}(t')dt'}}dt}+\int_{T_R-T_D}^{T_L}{\mathcal{R}^m(t)dt}\\
+&= 1 - e^{-\int_{T_L}^{T_R}{\mathcal{R}(t')dt'}}-\int_{T_L}^{T_R}{\mathcal{R}^m(t)dt}
 \end{aligned}
 \end{equation}
 
-Use Equ.~\eqref{equ:nonpara_integration} to verify that when $T_R-T_L=T_D$, $P(N^o=0)+P(N^o=1)=1$.
+Use Equ.~\eqref{equ:nonpara_integration} to verify that when $T_R-T_L\leq T_D$, $P(N^o=0)+P(N^o=1)=1$.
+\begin{equation}
+P(N^o=1)=E(N^{o,\mathrm{non}})=\int_{T_L}^{T_R}{\mathcal{R}^m(t)dt}
+\end{equation}
