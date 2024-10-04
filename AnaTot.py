@@ -11,27 +11,23 @@ from matplotlib.backends.backend_pdf import PdfPages
 from Likelihood import CorrParalyzable
 from scipy import optimize
 
-from skpy.DetectorParaReader import BonsaiLikelihoodReader
 from scipy.interpolate import interp1d
-bonsaiLikelihoodReader = BonsaiLikelihoodReader()
-bonsaiLikelihoodReader.loadH5()
-lc_TBIN = bonsaiLikelihoodReader.TBIN
-bonsaiLikelihood = bonsaiLikelihoodReader.pdfs[0, :]
-T_lc_left, T_lc_right = (-bonsaiLikelihood.shape[0] + int(bonsaiLikelihoodReader.offsets[1])) * lc_TBIN, (bonsaiLikelihoodReader.offsets[1] - 1) * lc_TBIN
-# normalize
-bonsaiLikelihood /= np.sum(bonsaiLikelihood) * bonsaiLikelihoodReader.TBIN
-R_js = bonsaiLikelihood[::-1]
-# cumsum
-bonsaiIntegration = np.insert(np.cumsum((R_js[:-1] + R_js[1:])/2), 0, 0) * lc_TBIN
+from Generator import Generator
 
-bonsaiLikelihood_fun = interp1d((np.arange(-bonsaiLikelihood.shape[0], 0) + bonsaiLikelihoodReader.offsets[1]) * bonsaiLikelihoodReader.TBIN, bonsaiLikelihood[::-1], bounds_error=False, fill_value=0)
-bonsaiIntegration_fun = interp1d((np.arange(-bonsaiLikelihood.shape[0], 0) + bonsaiLikelihoodReader.offsets[1]) * bonsaiLikelihoodReader.TBIN, bonsaiIntegration, bounds_error=False, fill_value=(0, 1))
+# T_lc_left, T_lc_right = (-bonsaiLikelihood.shape[0] + int(bonsaiLikelihoodReader.offsets[1])) * lc_TBIN, (bonsaiLikelihoodReader.offsets[1] - 1) * lc_TBIN
 
 psr = argparse.ArgumentParser()
 psr.add_argument('-i', dest='ipt', help='input MC')
 psr.add_argument('-o', dest='opt', help='output analysis')
 psr.add_argument('--parser', dest='parser', default="TD900_MU0.5_DN0", help='Dead time[ns], expected number of photon, Dark noise rate[kHz] values string')
+psr.add_argument('--model', dest='model', default='Rectangle', help='light curve shape')
+psr.add_argument('--use_truth', dest='use_truth', default=False, action='store_true', help='use truth dark noise in the analysis')
 args = psr.parse_args()
+generator = Generator(args.model).generator
+R_js = generator.R_js
+T_lc_left, T_lc_right = generator.t_l, generator.t_r
+lc_TBIN = generator.TBIN
+
 values = args.parser.split('_')
 v_m = {v[:2]: float(v[2:]) for v in values}
 T_D, mu, DN = float(v_m['TD']), float(v_m['MU']), float(v_m['DN'])
@@ -90,7 +86,7 @@ def recon(paralabel='unpara', estimate_b_corr=estimate_b_corr_unpara, use_truth=
     
     minimizeObj.Rt(useless_index, hit_index, index_l_int, index_l_frac, index_r_int, index_r_frac, r_max, noise_pre_window, integrate_index_mask)
     
-    bounds = [0.1, 30]
+    bounds = [0.01, 30]
     occupancy = np.sum(hit_index) / Entries
     Neff_estimate = occupancy * np.exp(occupancy)
     print(occupancy, Neff_estimate)
@@ -98,6 +94,6 @@ def recon(paralabel='unpara', estimate_b_corr=estimate_b_corr_unpara, use_truth=
     print(res_x)
     print(minimizeObj.NeffLikelihood_T(mu, (hit_index)))
     return minimizeObj
-minimizeObj = recon('unpara', estimate_b_corr_unpara)
-minimizeObj = recon('para', estimate_b_corr_para)
+minimizeObj = recon('unpara', estimate_b_corr_unpara, args.use_truth)
+minimizeObj = recon('para', estimate_b_corr_para, args.use_truth)
 

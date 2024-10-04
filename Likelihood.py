@@ -153,8 +153,8 @@ class CorrParalyzable(Corr):
         likelihood = np.sum(pmt_K_js * self.hat_hit_lambda_live_js[~self.useless_index] + self.pmt_b_js_T) - np.sum(np.log(pmt_K_js * self.hat_hit_R_js[~self.useless_index] + self.pmt_b_js)) # R_m, noise part cdf is not related with pmt_K_js, which is omit
         if self.nohitN!=0:
             self.Rt_m(pmt_K_js, hit_index)
-            likelihood += - self.nohitN * np.log(1 - (np.exp(-pmt_K_js * self.F_R_js_tl) - np.exp(-pmt_K_js * self.F_R_js_tr)) * np.exp(-self.pmt_b_js_T))
-            #likelihood += - self.nohitN * np.log(1 - (np.exp(-pmt_K_js * self.F_R_js_tl) - np.exp(-pmt_K_js * self.F_R_js_tr) + self.pmt_b_js * self.F_exp_R_js) * np.exp(-self.pmt_b_js_T) - self.pmt_b_corr_js_prewindow[~hit_index][0])
+            # likelihood += - self.nohitN * np.log(1 - (np.exp(-pmt_K_js * self.F_R_js_tl) - np.exp(-pmt_K_js * self.F_R_js_tr)) * np.exp(-self.pmt_b_js_T))[0]
+            likelihood += - self.nohitN * np.log(1 - (np.exp(-pmt_K_js * self.F_R_js_tl) - np.exp(-pmt_K_js * self.F_R_js_tr) + self.pmt_b_js * self.F_exp_R_js) * np.exp(-self.pmt_b_js_T) - self.pmt_b_corr_js_prewindow[~hit_index][0])
         # expected photon number * lc + b
         # likelihood_j = nonhit probability
         # + R_m(t)*(1-lambda_live)
