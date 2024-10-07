@@ -123,7 +123,7 @@ class CorrParalyzable(Corr):
         self.pmt_b_corr_js_prewindow = self.pmt_b_corr_js * noise_pre_window
         self.pmt_b_js_T = self.pmt_b_js * self.T_Dead
 
-        self.hat_hit_R_js = interp(self.Rt_js[np.newaxis, :r_max], index_r_int[hit_index], index_r_frac[hit_index]) * self.lc_TBIN
+        self.hat_hit_R_js = interp(self.Rt_js[np.newaxis, :r_max], index_r_int[hit_index], index_r_frac[hit_index])# no need to multiply * self.lc_TBIN
         assert((self.hat_hit_R_js[~useless_index]>=0).all())
         self.hat_hit_lambda_live_js = interp(self.F_Rt_js[np.newaxis, :r_max], index_r_int[hit_index], index_r_frac[hit_index])  # T_Dead window, the left window must outside the T_left, thus interp(self.F_Rt_js[np.newaxis, :r_max], index_l_int[hit_index], index_l_frac[hit_index])=0
 

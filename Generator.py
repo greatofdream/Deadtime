@@ -18,8 +18,9 @@ class Bonsai():
         self.bonsaiLikelihoodReader.loadH5()
         bonsaiLikelihood = self.bonsaiLikelihoodReader.pdfs[0, :]
         # normalize
-        bonsaiLikelihood /= np.sum(bonsaiLikelihood) * self.bonsaiLikelihoodReader.TBIN
+        bonsaiLikelihood /= np.sum(bonsaiLikelihood) * self.bonsaiLikelihoodReader.TBIN # already to be the probability
         self.N = bonsaiLikelihood.shape[0]
+        self.TBIN = self.bonsaiLikelihoodReader.TBIN
         self.R_js = bonsaiLikelihood[::-1]
         self.bonsaiIntegration = np.insert(np.cumsum((self.R_js[:-1] + self.R_js[1:])/2), 0, 0) * self.bonsaiLikelihoodReader.TBIN
         self.t_l, self.t_r = (-bonsaiLikelihood.shape[0] + self.bonsaiLikelihoodReader.offsets[1]) * self.bonsaiLikelihoodReader.TBIN, (self.bonsaiLikelihoodReader.offsets[1]-1) * self.bonsaiLikelihoodReader.TBIN
