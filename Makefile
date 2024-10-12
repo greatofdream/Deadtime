@@ -15,6 +15,8 @@ MC/$(LC)/%.h5:
 	# simuate nonparalyzable and paralyzable simutaneously
 	mkdir -p $(@D)
 	python3 ToyMC.py -o $@ --parser $(subst /,_,$*)
+MC/$(LC)/compare.h5:
+	python3 CompareMC.py --MU $(mus) --DN $(darknoise) --TD $(T_D) --format $(@D)/TD{}/MU{}_DN{}.h5 -o $@
 ANA/$(LC)/%.h5: MC/$(LC)/%.h5
 	mkdir -p $(@D)
 	python3 AnaTot.py -i $^ -o $@ --parser $(subst /,_,$*)
