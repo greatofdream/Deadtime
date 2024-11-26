@@ -21,6 +21,7 @@
 \addbibresource{ref.bib}
 % line number
 \usepackage{lineno}
+% main text
 \begin{document}
 
     \title{Dead time correction for the inhomogeneous Poisson process}
@@ -33,22 +34,31 @@
     \author[a,b,c]{Shaomin Chen}
 
     \affil[a]{
-        organization={Department of Engineering Physics},
-        addressline={Tsinghua University}, 
-        city={Beijing},
-        postcode={100084},
-        country={China}}
+Department of Engineering Physics, Tsinghua University
+%        organization={Department of Engineering Physics},
+%        addressline={Tsinghua University}, 
+%        city={Beijing},
+%        postcode={100084},
+%        country={China}
+	    }
     \affil[b]{
-        organization={Center for High Energy Physics},
-        addressline={Tsinghua University}, 
-        city={Beijing},
-        postcode={100084},
-        country={China}}
+Center for High Energy Physics, Tsinghua University
+%        organization={Center for High Energy Physics},
+%        addressline={Tsinghua University}, 
+%        city={Beijing},
+%        postcode={100084},
+%        country={China}
+	    }
     \affil[c]{
-        organization={Key Laboratory of Particle \& Radiation Imaging (Tsinghua University)},
-        addressline={Ministry of Education},
-        country={China}}
+Key Laboratory of Particle \& Radiation Imaging (Tsinghua University)
+%        organization={Key Laboratory of Particle \& Radiation Imaging (Tsinghua University)},
+%        addressline={Ministry of Education},
+%        country={China}
+	    }
 \maketitle
+% new command
+\def\dif{\mathop{}\!\mathrm{d}}
+
 \begin{abstract}
 The correction of dead time.
 \end{abstract}
@@ -57,6 +67,10 @@ The correction of dead time.
 \input{Correction}
 \input{Inference}
 \input{Conclusion}
+\section{Acknowledgement}
+This work is supported in part by the National Natural Science Foundation of China
+(), the Key Laboratory of Particle \& Radiation Imaging (Tsinghua Univer-
+sity).
 \printbibliography
 \appendix
 \input{Appendix}

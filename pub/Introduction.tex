@@ -1,24 +1,36 @@
 \section{Introduction}
 
-Due to the processes of the detector or the associated electronics, the events in a time interval (\textit{dead time}) following a preceding event are omit~\cite{Knoll:2000fj}. There are two basic types of the dead time behavior: \textit{paralyzable} and \textit{nonparalyzable} response~\cite{müller1973deadtime,muller:1994,Knoll:2000fj}. The true events in the fixed dead time $T_D$ are lost and does not affect the length of the dead time for the nonparalyzable response. While for the paralyzable response, the dead time is still $T_D$ for an observed event but the dead interval will be extended by the true event in the dead period by another dead time $T_D$. The homogeneous Poisson process describes the counting process with a constant event rate $R$ for the infinite timing scale. The observed rate $R^m$ for the paralyzable and nonparalyzable response are~\cite{muller:1994}
+Due to the processes of the detector (e.g. avalance in Geiger tube~\cite{}, discharge in the nerve fiber~\cite{miller:1985algorithms,bi:1989closedform,}) or the associated electronics (e.g. decharge of QDC~\cite{}), the events in a time interval (\textit{dead time}) following a preceding event are omit~\cite{Knoll:2000fj}. 
+There are two basic types of the dead time behavior: \textit{paralyzable} and \textit{nonparalyzable} response~\cite{müller1973deadtime,muller:1994,Knoll:2000fj}. The true events in the fixed dead time $T_D$ are lost and does not affect the length of the dead time for the nonparalyzable response. While for the paralyzable response, the dead time is still $T_D$ for an observed event but the dead interval will be extended by the true event in the dead period with another dead time $T_D$ as shown in Fig.~\ref{}.
+The homogeneous Poisson process describes the counting process with a constant event rate $R$ for the infinite timing scale. The observed rate $R^m$ for the paralyzable and nonparalyzable response are~\cite{muller:1994}
 \begin{equation}
 \begin{aligned}
 	R^{m,\mathrm{para}}&=Re^{-RT_\mathrm{dead}}\\
 	R^{m,\mathrm{non}}&=\frac{R}{1+RT_D}
 \end{aligned}.
+\label{equ:homogeneous_deadtime}
 \end{equation}
 
-To inference the $R$ from $R^{m,\mathrm{para}}$ need to solve the equation, which could be approximated with the series~\cite{muller:1994}. Besides, there exist two possible solutions for the $R$. For the nonparalyzable response the observed rate is $R=R^{m,\mathrm{non}}/(1-R^{m,\mathrm{non}}T_D)$. The interval densities and the counting statistics of the observed event number of the paralyzable and nonparalyzable response for the homogeneous Poisson process given by Muller using the renewal processes~\cite{müller1973deadtime,muller:1994,yu:2000mean,pomme:2015uncertainty}.
+To inference the $R$ from $R^{m,\mathrm{para}}$ need to solve the Equ.~\eqref{equ:homogeneous_deadtime}, which could be approximated with the series and there exist two possible solutions for the $R$~\cite{muller:1994}. 
+For the nonparalyzable response, the observed rate is $R=R^{m,\mathrm{non}}/(1-R^{m,\mathrm{non}}T_D)$, which is the corollary of Equ.~\eqref{equ:homogeneous_deadtime}.
 
-For the finite trains of pulse with a const event rate in the interval $[0,T]$, the mean observed event rate is researched by Cormack using the probability $P_n(T)$ of the n-th observed pulse~\cite{Cormack:1962}:
+For the finite trains of pulse with a const event rate in the interval $[0,T]$ of the nonparalyzable response, Cormack gave a relationship between the probability $P_n(T)$ of the $n$ observed pulses existing in the interval and the probability $P_n(T|t_{0}=0)$ when a hit exist in $t=0$ ~\cite{Cormack:1962}:
 \begin{equation}
-\overline{R}^m=\sum_{n=1}^{k}{nP_n(T)}
+P_n(T) = P_n(T+T_D|t_{0}=0)
 \end{equation}
-in which $(k-1)T_D<T<kT_D$.
+The mean observed event rate is~\cite{Cormack:1962}:
+\begin{equation}
+\overline{R}^m=\sum_{n=1}^{n_\mathrm{max}}{nP_n(T)}
+\end{equation}
+in which $(n_\mathrm{max}-1)T_D<T<n_\mathrm{max}T_D$.
 
-Many fields considers the time dependent signal intensity corrected by the dead time. The inhomogeneous Poisson process is suitable for the event rate varies versus time $R(t)$. Vannucci et.al. use $\overline{R}^{m,\mathrm{non}}=\int_{t_l}^{t_r}{R(t)/\left(1+R(t)T_D\right)dt}$ to approximate the expected number and variance of observed events in the interval $[t_l,t_r]$ for the nonparalyzable response~\cite{Vannucci:1978,Vannucci:1981}, which is under the assumption of slow variance of the $R(t)$. This coarse approximation is used or mentioned by some old publicationabout doubly stochastic Poisson process with dead time~\cite{Saleh:1981,Teich:2000}.
+Many fields considers the time dependent signal intensity corrected by the dead time. The inhomogeneous Poisson process is suitable for the event rate varies versus time $R(t)$~\cite{}. The self-exciting Poisson process is used to model the observed event rate~\cite{bi:1989closedform}, which is the product of Poisson process and correction term. Bi gave the closed form of $R(t)$ inferenced from $R^m(t)$ with the known correction term which is hard to estimate. However, the correction term in the paralyzable and nonparalyzable response is correlated with the $R(t)$. Miller gave an algorithm for estimate $R(t)$ and $r(t)$ with a fixed expression of $r(t)$~\cite{miller:1985algorithms}.
 
-The close form of the interval densities of inhomogeneous Poisson process is difficult to obtain except in very specific cases~\cite{Picinbono:2009output}. The interval distribution with random dead times is calculated using numerical method by Peterson et.al~\cite{Peterson:2021numerical}. However, the expression of $R^m(t)$ is useful to constructed likelihood but there is no similar research.
+Vannucci et.al. use $\overline{R}^{m,\mathrm{non}}=\int_{t_l}^{t_r}{R(t)/\left(1+R(t)T_D\right)dt}$ to approximate the expected number and variance of observed events in the interval $[t_l,t_r]$ for the nonparalyzable response~\cite{Vannucci:1978,Vannucci:1981}, which is under the assumption of slow variance of the $R(t)$. This coarse approximation is used or mentioned by some old publicationabout doubly stochastic Poisson process with dead time~\cite{Saleh:1981,Teich:2000}.
+
+The statistical properties of point processes are often investiaged using interval distribution~\cite{}. The focus of previous research is the interval densities and the counting statistics of the observed event number is , which of the paralyzable and nonparalyzable response for the homogeneous Poisson process summarized by Muller using the renewal processes~\cite{müller1973deadtime,muller:1994,yu:2000mean,pomme:2015uncertainty}. The interval densities is useful for the system without storing timestamps.
+
+The close form of the interval densities of inhomogeneous Poisson process is difficult to obtain except in very specific cases~\cite{Picinbono:2009output}. Picinbono discussed a recursive method to calculate the interval distribution. The interval distribution with random dead times is calculated using numerical method by Peterson et.al~\cite{Peterson:2021numerical}. However, the expression of $R^m(t)$ is useful to constructed likelihood but there is no similar research.
 
 Verma .et.al used MCMC method to inference $R(t)$ from the observed events with random dead times, which works not well for high flux~\cite{Verma:2017inhomogeneous}.
 

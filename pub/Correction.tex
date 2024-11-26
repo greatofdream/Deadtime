@@ -6,50 +6,76 @@ The hit number is an inhomogenous Poisson process:
 	\item $b$: dark noise rate of j-th PMT.
 	\item $\lambda^\mathrm{PE}$: number of the expected photon on the j-th PMT.
 	\end{enumerate}
-\subsection{The probability versus time}
+\subsection{Simulation}
+rectangle, Gaussian, exponential
+
+simulation time
+sample time T $[t_l,t_r]$
+Dead time 0.1T, 0.5T, T, 2T
+
+\subsection{The observed rate versus time}
 Due to the dead time effect:
 \begin{equation}
 \begin{aligned}
-\mathcal{R}^{m,\mathrm{para}}&=\mathcal{R}e^{-\int_{t-T_D}^t{\mathcal{R}dt}}\\
-\mathcal{R}^{m,\mathrm{non}}&=\mathcal{R}(1-\int_{t-T_D}^t{\mathcal{R}^{m,\mathrm{non}}dt})
+\mathcal{R}^{m,\mathrm{para}}&=\mathcal{R}e^{-\int_{t-T_D}^t{\mathcal{R}\dif t}}\\
+\mathcal{R}^{m,\mathrm{non}}&=\mathcal{R}\left(1-\int_{t-T_D}^t{\mathcal{R}^{m,\mathrm{non}}\dif t}\right)
 \end{aligned}
+\label{equ:obs_rate}
 \end{equation}
-$\mathcal{R}^m$ for paralyzable response is easily calculated numerically. For nonlyzable response, randomly select a left boundary $L$, it could be $[-\infty,t-T_D]$
+$\mathcal{R}^{m,\mathrm{para}}$ for paralyzable response is easily calculated numerically. While for nonlyzable response, $\mathcal{R}^{m,\mathrm{non}}$ need to be solved from Equ.~\eqref{equ:obs_rate}. 
+Randomly select a left boundary $L\in[-\infty,t-T_D]$ for the integration,
 \begin{equation}
 \begin{aligned}
-\mathcal{R}(t)-\mathcal{R}^{m,\mathrm{non}}(t-T_D)&=\mathcal{R}^{m,\mathrm{non}}(t)-\mathcal{R}^{m,\mathrm{non}}(t-T_D)+R\int_{t-T_D}^t{\mathcal{R}^{m,\mathrm{non}}dt}\\
-(\mathcal{R}(t)-\mathcal{R}^{m,\mathrm{non}}(t-T_D))e^{\int_{L}^{t}{R(t')dt'}}&=\frac{d\int_{t-T_D}^t{\mathcal{R}^{m,\mathrm{non}}dt}e^{\int_{L}^{t}{R(t')dt'}}}{dt}
+\mathcal{R}^{m,\mathrm{non}}(t)-\mathcal{R}^{m,\mathrm{non}}(t-T_D)+R(t)\int_{t-T_D}^t{\mathcal{R}^{m,\mathrm{non}}\dif t}&=\mathcal{R}(t)-\mathcal{R}^{m,\mathrm{non}}(t-T_D)\\
+\frac{\dif \left(e^{\int_{L}^{t}{R(t')\dif t'}}\int_{t-T_D}^t{\mathcal{R}^{m,\mathrm{non}}\dif t}\right)}{\dif t}&=\left(\mathcal{R}(t)-\mathcal{R}^{m,\mathrm{non}}(t-T_D)\right)e^{\int_{L}^{t}{R(t')dt'}}
 \end{aligned}
 \end{equation}
 Integrate above equation
 \begin{equation}
-\int_{t-T_D}^t{\mathcal{R}^{m,\mathrm{non}}dt}e^{\int_{L}^{t}{R(t')dt'}}=\int_{L}^{t}{(\mathcal{R}(t)-\mathcal{R}^{m,\mathrm{non}}(t-T_D))e^{\int_{L}^{t}{R(t')dt'}}dt} + \int_{L-T_D}^{L}{R^{m,\mathrm{non}}dt}
+\begin{aligned}
+e^{\int_{L}^{t}{R(t')dt'}}\int_{t-T_D}^t{\mathcal{R}^{m,\mathrm{non}}\dif t}&=\int_{L}^{t}{(\mathcal{R}(t)-\mathcal{R}^{m,\mathrm{non}}(t-T_D))e^{\int_{L}^{t}{R(t')\dif t'}}\dif t} + \int_{L-T_D}^{L}{R^{m,\mathrm{non}}\dif t}\\
+\int_{t-T_D}^t{\mathcal{R}^{m,\mathrm{non}}dt}&=e^{-\int_{L}^{t}{R(t')dt'}}\left[\int_{L}^{t}{(\mathcal{R}(t)-\mathcal{R}^{m,\mathrm{non}}(t-T_D))e^{\int_{L}^{t}{R(t')dt'}}dt} + \int_{L-T_D}^{L}{R^{m,\mathrm{non}}\dif t}\right]
+\label{equ:nonpara_integration}
+\end{aligned}
 \end{equation}
 Therefore, 
-\begin{equation}
-\int_{t-T_D}^t{\mathcal{R}^{m,\mathrm{non}}dt}=e^{-\int_{L}^{t}{R(t')dt'}}\left[\int_{L}^{t}{(\mathcal{R}(t)-\mathcal{R}^{m,\mathrm{non}}(t-T_D))e^{\int_{L}^{t}{R(t')dt'}}dt} + \int_{L-T_D}^{L}{R^{m,\mathrm{non}}dt}\right]
-\label{equ:nonpara_integration}
-\end{equation}
 \begin{equation}
 \begin{aligned}
 \mathcal{R}^{m,\mathrm{non}}(t)&=\frac{d e^{-\int_{L}^{t}{R(t')dt'}}\left[\int_{L}^{t}{(\mathcal{R}(t)-\mathcal{R}^{m,\mathrm{non}}(t-T_D))e^{\int_{L}^{t}{R(t')dt'}}dt} + \int_{L-T_D}^{L}{R^{m,\mathrm{non}}dt}\right]}{dt}+\mathcal{R}^{m,\mathrm{non}}(t-T_D)\\
 &=\mathcal{R}(t)-R(t)e^{-\int_{L}^{t}{R(t')dt'}}\left[\int_{L}^{t}{(\mathcal{R}(t)-\mathcal{R}^{m,\mathrm{non}}(t-T_D))e^{\int_{L}^{t}{R(t')dt'}}dt}+\int_{L-T_D}^{L}{R^{m,\mathrm{non}}dt}\right]\\
-&=\mathcal{R}(t)e^{-\int_{L}^{t}{R(t')dt'}}(1-\int_{L-T_D}^{L}{R^{m,\mathrm{non}}dt}+\int_{L}^{t}{\mathcal{R}^{m,\mathrm{non}}(t-T_D)e^{\int_{L}^{t}{R(t')dt'}}dt})
+&=\mathcal{R}(t)e^{-\int_{L}^{t}{R(t')dt'}}(1-\int_{L-T_D}^{L}{R^{m,\mathrm{non}}dt}+\int_{L}^{t}{\mathcal{R}^{m,\mathrm{non}}(t-T_D)e^{\int_{L}^{t}{R(t')dt'}}dt})\\
+&=R(t)\left(\frac{R^m(L)}{R(L)}e^{-\int_{L}^{t}{R(t')dt'}}+\int_{L}^{t}{\mathcal{R}^{m,\mathrm{non}}(t-T_D)e^{\int_{t}^{t_1}{R(t')dt'}}\dif t_1}\right)
 \end{aligned}
 \end{equation}
-That means we need know the expresion of $R^m$ in the interval $[t-2T_D,t-T_D]$. When the signal is local, the $R^m$ is $b^m$ before signal. The solution for the nonlyzable response in the first dead time window:
+Use differential to prove $\dif R^m/\dif L=0$. That means we need know the expresion of $R^m$ in the interval $[(k-1)T_D,kT_D]$ to calculate the $R^m$ in the interval $t\in[kT_D, (k+1)T_D]$ as following: 
 \begin{equation}
-	\mathcal{R}^{m,\mathrm{non}}=\mathcal{R}e^{-\int_{L}^t{\mathcal{R}dt}}(1-b^mT_D+b^m\int^{t}_{L}{e^{\int_{L}^{t'}{\mathcal{R}(t')dt'}}dt})
+\mathcal{R}^{m,\mathrm{non}}(t) = R(t)\left(\frac{R^m(kT_D)}{R(kT_D)}e^{-\int_{kT_D}^{t}{R(t')dt'}}+\int_{kT_D}^{t}{\mathcal{R}^{m,\mathrm{non}}(t-T_D)e^{\int_{t}^{t_1}{R(t')dt'}}\dif t_1}\right)
 \end{equation}
+
+When the signal is local, the $R^m$ is $b^m$ before signal, which means $R(L)=b$. The solution for the nonlyzable response in the first dead time window:
+\begin{equation}
+\begin{aligned}
+	\mathcal{R}^{m,\mathrm{non}}&=\mathcal{R}e^{-\int_{L}^t{\mathcal{R}dt}}(1-b^mT_D+b^m\int^{t}_{L}{e^{\int_{L}^{t_1}{\mathcal{R}(t')dt'}}\dif t_1})\\
+	&=R(t)b^m\left(\frac{1}{b}e^{-\int_{L}^t{\mathcal{R}dt}}+\int^{t}_{L}{e^{-\int_{t_1}^{t}{\mathcal{R}(t')dt'}}\dif t_1}\right)\\
+	&=R(t)b^m\left(\frac{1}{R(t)}+\int^{t}_{L}{\frac{R'(t)}{R^2(t)}e^{-\int_{t_1}^{t}{\mathcal{R}(t')dt'}}\dif t_1}\right)\\
+	&=b^m + R(t)b^m\int^{t}_{L}{\frac{R'(t)}{R^2(t)}e^{-\int_{t_1}^{t}{\mathcal{R}(t')dt'}}\dif t_1}
+\end{aligned}
+\end{equation}
+
+When $t<L$, $R'(t)=0$, therefore $R^m$ is uncorrelated with $L$ selection.
+
+When there is no background, $\mathcal{R}^{m,\mathrm{non}}(t) = R(t)e^{-\int_{L}^{t}{R(t')dt'}}$.
 The expression in the following dead time window could be calculated iteratively one by one.
 
-\subsection{Probability in the interval}
+As shown in Fig.
+
+\subsection{Probability of no observed hit in the interval}
 Note the interval as $[T_L, T_R]$, the number of the observed hit and true hit are $N^{o}, N^{i}$. The expected number of observed hit is 
 \begin{equation}
 \begin{aligned}
 E(N^{o})&=\int_{T_L}^{T_R}{\mathcal{R}^m(t)dt}\\
 E(N^{o,\mathrm{para}})&=\int_{T_L}^{T_R}{\mathcal{R}(t)e^{-\int_{t-T_D}^{t}{\mathcal{R}(t')dt'}}dt}\\
-E(N^{o,\mathrm{non}})&=\int_{T_L}^{T_R}{\mathcal{R}(t)(1-\int_{t-T_D}^{t}{\mathcal{R}^{m,\mathrm{non}}(t')dt'})dt}
+E(N^{o,\mathrm{non}})&=\int_{T_L}^{T_R}{\mathcal{R}(t)\left(1-\int_{t-T_D}^{t}{\mathcal{R}^{m,\mathrm{non}}(t')dt'}\right)dt}
 \end{aligned}
 \end{equation}
 If the interval length $T_R-T_L<T_D$, there exist at most one observed hit in the time interval ($N^o\leq1$). For $N^o=1$, the probability should be equal to $E(N^o)$.
@@ -58,11 +84,13 @@ For $N^o=0$, the case could be seperate into there is no hit in the interval ($N
 \begin{equation}
 P(N^i=0,N^o=0)=e^{-\int_{T_L}^{T_R}{\mathcal{R}(t)dt}}
 \end{equation}
+
 \subsubsection{Paralyzable}
-For paralyzable response with $T_R-T_L<T_D$, when $N^i>0$, there exist a true hit $t\in[T_L-T_D,T_L]$ close to $T_L$ and exist hits in the interval $[T_L, min(T_R,t+T_D)]$.
+For paralyzable response with $T_R-T_L<T_D$, $N^i>0$ means there exist a true hit $t\in[T_L-T_D,T_L]$ close to $T_L$ and exist hits in the interval $[T_L, min(T_R,t+T_D)]$.
 \begin{equation}
 \begin{aligned}
-P&(N^i>0,N^o=0)\\
+P&(N^i>0,N^o=0;[T_L,T_R])\\
+&=\int_{T_L-T_D}^{T_L}{\mathcal{R}(t)dt P(N^i=0;[t,T_L])P(N^i>0;[T_L,t+T_D])}\\
 &=\int_{T_L-T_D}^{T_L}{\mathcal{R}(t)e^{-\int_{t}^{T_L}{\mathcal{R}(t')dt'}}(1-e^{-\int_{T_L}^{min(T_R,t+T_D)}{\mathcal{R}(t')dt'}})dt}\\
 &=\int_{T_L-T_D}^{T_L}{\mathcal{R}(t)e^{-\int_{t}^{T_L}{\mathcal{R}(t')dt'}}dt}-\int_{T_L-T_D}^{T_L}{\mathcal{R}(t)e^{-\int_{t}^{min(T_R,t+T_D)}{\mathcal{R}(t')dt'}})dt}\\
 &=1-e^{-\int_{T_L-T_D}^{T_L}{\mathcal{R}(t')dt'}}-\int_{T_L}^{T_L+T_D}{\mathcal{R}(t-T_D)e^{-\int_{t-T_D}^{min(T_R,t)}{\mathcal{R}(t')dt'}}dt}\\
@@ -77,6 +105,10 @@ P(N^o=0) &= P(N^i=0,N^o=0)+P(N^i>0,N^o=0)\\
 \end{equation}
 $P(N^o=0)+P(N^o=1)=1$ could be verified easily.
 
+It is hard to express the probability for $T_R-T_L>T_D$.
+
+When there exist an hit list ${t_i}$, each hit match an interval ${[t_i-T_D,t_i+T_D]}$ and probability is $R^m(t_i)$. The interval list ${t_i^l,t_i^r}$ which is not overlapped by the formal interval list in sample window is $P(N^o=0;[t_i^l,t_i^r])$.
+
 \subsubsection{Nonparalyzable}
 For nonlyzable response, when $N^i>0$, there exist a observed hit $t\in[T_L-T_D,T_L]$ close to $T_L$ and exist hits in the interval $[T_L, min(T_R,t+T_D)]$. Besides, there is no true hit in the interval $[min(T_R,t+T_D),T_R]$.
 \begin{equation}
@@ -86,7 +118,7 @@ P&(N^i>0,N^o=0)\\
 &=\int_{T_L-T_D}^{T_L}{\mathcal{R}(t)\left(1-\int_{t-T_D}^{t}{\mathcal{R}^m(t')dt'}\right)\left(e^{-\int_{min(T_R,t+T_D)}^{T_R}{\mathcal{R}(t')dt'}}-e^{-\int_{T_L}^{T_R}{\mathcal{R}(t')dt'}}\right)dt}\\
 \end{aligned}
 \end{equation}
-when $T_R-T_L\geq T_D$,
+When $T_R-T_L\geq T_D$,
 \begin{equation}
 \begin{aligned}
 P&(N^i>0,N^o=0)\\
@@ -96,7 +128,9 @@ P&(N^i>0,N^o=0)\\
 &= e^{\int_{T_R}^{T_L+T_D}{\mathcal{R}(t')dt'}} - e^{-\int_{T_L}^{T_R}{\mathcal{R}(t')dt'}}-\int_{T_L}^{T_L+T_D}{\mathcal{R}^m(t)dt}
 \end{aligned}
 \end{equation}
-when $T_R-T_L\leq T_D$,
+therefore, $P(N^o=0)=P(N^i>0,N^o=0)+P(N^i=0,N^o=0)=e^{\int_{T_R}^{T_L+T_D}{\mathcal{R}(t')dt'}}-\int_{T_L}^{T_L+T_D}{\mathcal{R}^m(t)dt}$.
+
+When $T_R-T_L\leq T_D$,
 \begin{equation}
 \begin{aligned}
 P&(N^i>0,N^o=0)\\
@@ -105,8 +139,22 @@ P&(N^i>0,N^o=0)\\
 &= 1 - e^{-\int_{T_L}^{T_R}{\mathcal{R}(t')dt'}}-\int_{T_L}^{T_R}{\mathcal{R}^m(t)dt}
 \end{aligned}
 \end{equation}
+therefore, $P(N^o=0)=P(N^i>0,N^o=0)+P(N^i=0,N^o=0)=1-\int_{T_L}^{T_L+T_D}{\mathcal{R}^m(t)dt}$.
 
 Use Equ.~\eqref{equ:nonpara_integration} to verify that when $T_R-T_L\leq T_D$, $P(N^o=0)+P(N^o=1)=1$.
 \begin{equation}
 P(N^o=1)=E(N^{o,\mathrm{non}})=\int_{T_L}^{T_R}{\mathcal{R}^m(t)dt}
 \end{equation}
+
+\subsection{Probability of an observed hit list in the interval}
+\subsubsection{nonparalyzable}
+When there exist an hit list ${t_i}$, each hit match an interval $D={[t_i,t_i+T_D]}$ and probability is $R(t_i)$. The interval list $F={t_i^l,t_i^r}$ which is not overlapped by the former interval list in sample window is $P(N^i=0;[t_i^l,t_i^r])$, except the first window $[T_L, t_1]$ should be modified. The first interval is $[t_0^l=t_1-T_D, t_0^r=t_1]$. When $T_L+T_D<t_1$ , the probability is $P(N_o=0;[T_L, t_1-T_D])$. The probability is 
+\begin{equation}
+P({t_i};[T_L,t_1])=\prod_i{R(t_i)\dif t}P(N_o=0;F)P(N_o=0;[T_L, t_1-T_D])
+\end{equation}
+\subsubsection{paralyzable}
+When there exist an hit list ${t_i}$, each hit match an interval $D={[t_i-T_D,t_i]}$ and probability is $R^m(t_i)$. The interval list $F={t_i^l,t_i^r}$ which is not overlapped by the former interval list in sample window is $P(N^o=0;[t_i^l,t_i^r]|t_i)$, except the first window $[T_L, t_1]$ should be modified.  When $T_L+T_D<t_1$ , the probability is $P(N_o=0;[T_L, t_1-T_D])$. The probability is 
+\begin{equation}
+P({t_i};[T_L,t_1])=\prod_i{R^m(t_i)\dif t}P(N_o=0;F)P(N_o=0;[T_L, t_1-T_D])
+\end{equation}
+
