@@ -6,7 +6,7 @@ darknoise:=0 5 10 20
 # Dead time window [ns]
 T_D:= 10 50 100 300 500 700 900
 # expcted photon number
-mus:= $(shell seq 0.1 0.1 0.9) $(shell seq 1 1 10)
+mus:= $(shell seq 0.1 0.1 0.9) $(shell seq 1 1 10) $(shell seq 15 5 40)
 mc: $(foreach dn,$(darknoise),$(foreach td,$(T_D),$(foreach mu,$(mus),MC/$(LC)/TD$(td)/MU$(mu)_DN$(dn).h5)))
 ana_test: $(foreach dn,$(darknoise),$(foreach mu,$(mus),ANA/$(LC)/TD900/MU$(mu)_DN$(dn).h5))
 

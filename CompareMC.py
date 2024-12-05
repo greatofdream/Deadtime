@@ -14,7 +14,7 @@ def loadH5(f):
     print('load {}'.format(f))
     with h5py.File(f, 'r') as ipt:
         sim_b, sim_s, sim_meta = ipt['darknoise'][:], ipt['photons'][:], ipt['meta'][:]
-        return sim_s.shape[0], sim_b.shape[0], np.sum(sim_s['para']), np.sum(sim_s['unpara']), np.sum(sim_b['para']), np.sum(sim_b['unpara'])
+        return sim_s.shape[0], sim_b.shape[0], np.sum(sim_s['para']), np.sum(sim_s['unpara']), np.sum(sim_b['para']), np.sum(sim_b['unpara']), sim_meta.shape[0]
 psr = argparse.ArgumentParser()
 psr.add_argument('--MU', dest="MU", nargs='+', help="MU list")
 psr.add_argument('--DN', dest="DN", nargs='+', help="DN list")
@@ -25,15 +25,15 @@ psr.add_argument('--plot', action='store_true', default=False, help='just plot')
 args = psr.parse_args()
 if not args.plot:
     mu_l, dn_l, td_l = len(args.MU), len(args.DN), len(args.TD)
-    res_para = np.empty((mu_l*dn_l*td_l), dtype=[('mu', np.float64), ('dn', np.float64), ('td', np.float64), ('hit_in', np.int32), ('dn_in', np.int32), ('hit_out', np.int32), ('dn_out', np.int32), ('ratio_hit', np.float64)])
-    res_nonpara = np.empty((mu_l*dn_l*td_l), dtype=[('mu', np.float64), ('dn', np.float64), ('td', np.float64), ('hit_in', np.int32), ('dn_in', np.int32), ('hit_out', np.int32), ('dn_out', np.int32), ('ratio_hit', np.float64)])
+    res_para = np.empty((mu_l*dn_l*td_l), dtype=[('mu', np.float64), ('dn', np.float64), ('td', np.float64), ('hit_in', np.int32), ('dn_in', np.int32), ('hit_out', np.int32), ('dn_out', np.int32), ('ratio_hit', np.float64), ('entries', np.int32)])
+    res_nonpara = np.empty((mu_l*dn_l*td_l), dtype=[('mu', np.float64), ('dn', np.float64), ('td', np.float64), ('hit_in', np.int32), ('dn_in', np.int32), ('hit_out', np.int32), ('dn_out', np.int32), ('ratio_hit', np.float64), ('entries', np.int32)])
     i = 0
     for td in args.TD:
         for mu in args.MU:
             for dn in args.DN:
-                hit_in, dn_in, hit_out_para, hit_out_nonpara, dn_out_para, dn_out_nonpara = loadH5(args.format.format(td, mu, dn))
-                res_para[i] = (float(mu), float(dn), float(td), hit_in, dn_in, hit_out_para, dn_out_para, hit_out_para/hit_in)
-                res_nonpara[i] = (float(mu), float(dn), float(td), hit_in, dn_in, hit_out_nonpara, dn_out_nonpara, hit_out_nonpara/hit_in)
+                hit_in, dn_in, hit_out_para, hit_out_nonpara, dn_out_para, dn_out_nonpara, entries = loadH5(args.format.format(td, mu, dn))
+                res_para[i] = (float(mu), float(dn), float(td), hit_in, dn_in, hit_out_para, dn_out_para, hit_out_para/hit_in, entries)
+                res_nonpara[i] = (float(mu), float(dn), float(td), hit_in, dn_in, hit_out_nonpara, dn_out_nonpara, hit_out_nonpara/hit_in, entries)
                 i += 1
     
     with h5py.File(args.opt, 'w') as opt:
