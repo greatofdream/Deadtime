@@ -4,16 +4,25 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from matplotlib.backends.backend_pdf import PdfPages
 from Generator import Generator
+from Spe import SpeSampler, Elec
 
-def Unparalyzable(ts):
-    ind = np.argsort(ts)
-    select = np.zeros(ts.shape, dtype=bool)
-    select[ind[0]] = True
-    tmp_t = ts[ind[0]]
+def Unparalyzable(sim_data):
+    # sim_data has same T
+    ind = np.argsort(sim_data[:, 0]['T'])
+    select = np.zeros(ts.shape, dtype=[('unpara', np.bool_), ('unparaQ', np.float64)])
+    select[ind[0], :]['unpara'] = True
+    select[ind[0], :]['unparaQ'] += sim_data[ind[0], :]['Q']
+    gate_l = sim_data[ind[0], 0]['T']
+    gate_i = 0
     for i in range(1, ts.shape[0]):
-        if ts[ind[i]] > (tmp_t + T_Dead):
-            select[ind[i]] = True
-            tmp_t = ts[ind[i]]
+        if sim_data[ind[i], 0]['T'] < (gate_l + T_Integrate):
+            efficiency = elec.elec.GetEfficiency(sim_data[ind[i], 0]['T'] - gate_l)
+            select[ind[gate_i], :]['unparaQ'] += efficiency * sim_data[ind[i], :]['Q']
+        elif ts[ind[i]] > (gate_l + T_Dead):
+            select[ind[i], :]['unpara'] = True
+            select[ind[i], :]['unparaQ'] += sim_data[ind[i], :]['Q']
+            gate_l = sim_data[ind[i], 0]['T']
+            gate_i = i
     return select
 
 def Paralyzable(ts):
@@ -43,11 +52,13 @@ psr.add_argument('--model', dest='model', default='Rectangle', help='light curve
 psr.add_argument('--parser', dest='parser', default="TD900_MU0.5_DN0", help='Dead time[ns], expected number of photon, Dark noise rate[kHz] values string')
 args = psr.parse_args()
 generator = Generator(args.model).generator
+speSampler = SpeSampler()
 values = args.parser.split('_')
 v_m = {v[:2]: float(v[2:]) for v in values}
 
 N_sample = args.entries
 T_Dead, N_photon, R_b = v_m['TD'], v_m['MU'], v_m['DN']/1E6
+T_Integrate = 400
 # dark noise rate in theory 
 R_b_corr = R_b / (1 + R_b*T_Dead) # precise for nonparlyzable, approximation for paralyzable
 # signal light curve, t0=0
@@ -55,6 +66,11 @@ R = generator.fun(times)
 # total rate in theory
 R_t = R_b + N_photon * R
 lambda_t_b = window * R_b
+# storage of the res
+sim_meta = np.empty((N_sample,), dtype=[('EventID', np.int64), ('num_b', np.int64), ('num_s', np.int64)])
+sim_b = np.empty((Ns_b_cum[-1], 3), dtype=[('EventID', np.int64), ('T', np.float64), ('Q', np.float64), ('unpara', np.bool_), ('unparaQ', np.float64), ('threshold', np.bool_)])
+sim_s = np.empty((Ns_s_cum[-1], 3), dtype=[('EventID', np.int64), ('T', np.float64), ('Q', np.float64), ('unpara', np.bool_), ('unparaQ', np.float64), ('threshold', np.bool_)])
+
 # Number of dark noise and photons
 Ns_b, Ns_s = np.random.poisson(lambda_t_b, N_sample), np.random.poisson(N_photon, N_sample)
 Ns_b_cum, Ns_s_cum = [0, *np.cumsum(Ns_b)], [0, *np.cumsum(Ns_s)]
@@ -62,9 +78,14 @@ Ns_b_cum, Ns_s_cum = [0, *np.cumsum(Ns_b)], [0, *np.cumsum(Ns_s)]
 Ts_b = np.random.rand(Ns_b_cum[-1]) * window + T_left
 Ts_s = generator.integration_reverse_fun(np.random.rand(Ns_s_cum[-1]))
 # MC of the events
-sim_meta = np.empty((N_sample,), dtype=[('EventID', np.int64), ('num_b', np.int64), ('num_s', np.int64)])
-sim_b = np.empty((Ns_b_cum[-1],), dtype=[('EventID', np.int64), ('T', np.float64), ('unpara', np.bool_), ('para', np.bool_)])
-sim_s = np.empty((Ns_s_cum[-1],), dtype=[('EventID', np.int64), ('T', np.float64), ('unpara', np.bool_), ('para', np.bool_)])
+c_rand = np.random.rand((3, Ns_b_cum[-1]))
+sim_b['Q', 0] = speSampler.sample(c_rand[0], 2)
+sim_b['Q', 1] = speSampler.sample(c_rand[1], 3)
+sim_b['Q', 2] = speSampler.sample(c_rand[2], 5)
+c_rand = np.random.rand((3, Ns_s_cum[-1]))
+sim_s['Q', 0] = speSampler.sample(c_rand[0], 2)
+sim_s['Q', 1] = speSampler.sample(c_rand[0], 3)
+sim_s['Q', 2] = speSampler.sample(c_rand[0], 5)
 sim_b['T'] = Ts_b
 sim_s['T'] = Ts_s
 sim_b['EventID'] = np.repeat(range(N_sample), Ns_b)
@@ -72,15 +93,17 @@ sim_s['EventID'] = np.repeat(range(N_sample), Ns_s)
 sim_meta['EventID'] = range(N_sample)
 sim_meta['num_b'] = Ns_b
 sim_meta['num_s'] = Ns_s
+
 for i in range(N_sample):
     if (Ns_b[i]+Ns_s[i])==0:
         continue
-    select = Unparalyzable(np.concatenate([Ts_b[Ns_b_cum[i]:Ns_b_cum[i+1]], Ts_s[Ns_s_cum[i]:Ns_s_cum[i+1]]]))
-    sim_b['unpara'][Ns_b_cum[i]:Ns_b_cum[i+1]] = select[:Ns_b[i]]
-    sim_s['unpara'][Ns_s_cum[i]:Ns_s_cum[i+1]] = select[Ns_b[i]:]
-    select = Paralyzable(np.concatenate([Ts_b[Ns_b_cum[i]:Ns_b_cum[i+1]], Ts_s[Ns_s_cum[i]:Ns_s_cum[i+1]]]))
-    sim_b['para'][Ns_b_cum[i]:Ns_b_cum[i+1]] = select[:Ns_b[i]]
-    sim_s['para'][Ns_s_cum[i]:Ns_s_cum[i+1]] = select[Ns_b[i]:]
+    select = Unparalyzable(np.concatenate([sim_b[Ns_b_cum[i]:Ns_b_cum[i+1]], sim_s[Ns_s_cum[i]:Ns_s_cum[i+1]]]))
+    sim_b[['unpara', 'unparaQ']][Ns_b_cum[i]:Ns_b_cum[i+1]] = select[:Ns_b[i]]
+    sim_s[['unpara', 'unparaQ']][Ns_s_cum[i]:Ns_s_cum[i+1]] = select[Ns_b[i]:]
+
+for i, pmttype in enumerate([2, 3, 5]):
+    sim_b[sim_b['unpara'], i]['threshold'] = elec.elec.IsElecHit(sim_b[sim_b['unpara'], i]['unparaQ'], pmttype)
+    sim_s[sim_s['unpara'], i]['threshold'] = elec.elec.IsElecHit(sim_s[sim_s['unpara'], i]['unparaQ'], pmttype)
 
 with h5py.File(args.opt, 'w') as opt:
     opt.create_dataset('darknoise', data=sim_b, compression='gzip')
