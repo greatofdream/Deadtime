@@ -40,22 +40,63 @@ if not args.plot:
         opt.create_dataset('para', data=res_para, compression='gzip')
         opt.create_dataset('nonpara', data=res_nonpara, compression='gzip')
     para_df = pd.DataFrame(res_para)
+    nonpara_df = pd.DataFrame(res_nonpara)
 else:
     with h5py.File(args.opt, 'r') as ipt:
         para_df = pd.DataFrame(ipt['para'][:])
-    
+        nonpara_df = pd.DataFrame(ipt['nonpara'][:])
+colors = ['r', 'g', 'b', 'k']
 with PdfPages(args.opt + '.pdf') as pdf:
+    nonpara_df_gr = nonpara_df.groupby('td')
     for td, td_rows in para_df.groupby('td'):
         fig, ax = plt.subplots()
-        for dn, rows in td_rows.groupby('dn'):
-            ax.scatter(rows['mu'], rows['ratio_hit'], s=2, label='{:.1f}kHz'.format(dn))
-        ax.legend()
-        ax.set_xlabel(r'$\mu$')
-        ax.set_ylabel('ratio')
-        ax.set_ylim([0, 1])
-        ax.yaxis.set_major_locator(MultipleLocator(0.1))
-        ax.xaxis.set_major_locator(MultipleLocator(1))
-        ax.xaxis.set_minor_locator(MultipleLocator(0.2))
-        pdf.savefig(fig)
+        fig_c, ax_c = plt.subplots()
+        fig_non, ax_non = plt.subplots()
+        fig_non_c, ax_non_c = plt.subplots()
+        fig_diff, ax_diff = plt.subplots()
+        fig_diff_c, ax_diff_c = plt.subplots()
 
-    
+        non_td_rows = nonpara_df_gr.get_group(td)
+        non_td_rows_gr = non_td_rows.groupby('dn')
+        for (dn, rows), c in zip(td_rows.groupby('dn'), colors):
+            ax.scatter(rows['mu'], rows['ratio_hit'], s=4, color=c, marker='+', label='Paralyzable {:.1f}kHz'.format(dn))
+            ax_c.scatter(rows['mu'], rows['hit_out'] / rows['entries'], s=4, color=c, marker='+', label='Paralyzable {:.1f}kHz'.format(dn))
+            non_rows = non_td_rows_gr.get_group(dn)
+            ax_non.scatter(non_rows['mu'], non_rows['ratio_hit'], s=4, color=c, marker='x', label='Nonparalyzable {:.1f}kHz'.format(dn))
+            ax_non_c.scatter(non_rows['mu'], non_rows['hit_out'] / non_rows['entries'], s=4, color=c, marker='x', label='Nonparalyzable {:.1f}kHz'.format(dn))
+            assert((rows['mu']==non_rows['mu']).all())
+            ax_diff.scatter(rows['mu'], rows['ratio_hit'] - non_rows['ratio_hit'], s=4, color=c, label='{:.1f}kHz'.format(dn))
+            ax_diff_c.scatter(rows['mu'], rows['hit_out'] / rows['entries'] - non_rows['hit_out'] / non_rows['entries'], s=4, color=c, label='{:.1f}kHz'.format(dn))
+        [(ax_i.legend(),
+        ax_i.set_xlabel(r'$\mu$'),
+        ax_i.set_ylabel('ratio'),
+        ax_i.set_ylim([0, 1]),
+        ax_i.yaxis.set_major_locator(MultipleLocator(0.1)),
+        ax_i.xaxis.set_major_locator(MultipleLocator(5)),
+        ax_i.xaxis.set_minor_locator(MultipleLocator(0.2)),
+        pdf.savefig(fig_i)) for fig_i, ax_i in zip([fig, fig_non], [ax, ax_non])]
+
+        [(ax_i.legend(),
+        ax_i.set_xlabel(r'$\mu$'),
+        ax_i.set_ylabel(r'$\Delta$ratio'),
+        ax_i.ticklabel_format(style='sci', axis='y', scilimits=(0, 0)),
+        ax_i.xaxis.set_major_locator(MultipleLocator(5)),
+        ax_i.xaxis.set_minor_locator(MultipleLocator(0.2)),
+        pdf.savefig(fig_i)) for fig_i, ax_i in zip([fig_diff], [ax_diff])]
+
+        [(ax_i.legend(),
+        ax_i.set_xlabel(r'$\mu$'),
+        ax_i.set_ylabel(r'$N_{obs}$'),
+        ax_i.yaxis.set_major_locator(MultipleLocator(0.1)),
+        ax_i.xaxis.set_major_locator(MultipleLocator(5)),
+        ax_i.xaxis.set_minor_locator(MultipleLocator(0.2)),
+        pdf.savefig(fig_i)) for fig_i, ax_i in zip([fig_c, fig_non_c], [ax_c, ax_non_c])]
+
+        [(ax_i.legend(),
+        ax_i.set_xlabel(r'$\mu$'),
+        ax_i.set_ylabel(r'$\Delta N_{obs}$'),
+        ax_i.ticklabel_format(style='sci', axis='y', scilimits=(0, 0)),
+        ax_i.xaxis.set_major_locator(MultipleLocator(5)),
+        ax_i.xaxis.set_minor_locator(MultipleLocator(0.2)),
+        pdf.savefig(fig_i)) for fig_i, ax_i in zip([fig_diff_c], [ax_diff_c])]
+
