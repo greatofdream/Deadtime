@@ -1,5 +1,30 @@
 import numpy as np
 from scipy.interpolate import interp1d
+def Unparalyzable(ts, T_Dead):
+    ind = np.argsort(ts)
+    select = np.zeros(ts.shape, dtype=bool)
+    select[ind[0]] = True
+    tmp_t = ts[ind[0]]
+    for i in range(1, ts.shape[0]):
+        if ts[ind[i]] > (tmp_t + T_Dead):
+            select[ind[i]] = True
+            tmp_t = ts[ind[i]]
+    return select
+
+def Paralyzable(ts, T_Dead):
+    ind = np.argsort(ts)
+    select = np.zeros(ts.shape, dtype=bool)
+    select[ind[0]] = True
+    tmp_t = ts[ind[0]]
+    for i in range(1, ts.shape[0]):
+        if ts[ind[i]] > (tmp_t + T_Dead):
+            select[ind[i]] = True
+            tmp_t = ts[ind[i]]
+        else:
+            # update the deadtime window if the pulse is in the dead time window
+            tmp_t = ts[ind[i]]
+    return select
+
 class Rectangle():
     def __init__(self):
         self.t_l, self.t_r = 0, 200

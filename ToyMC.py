@@ -3,32 +3,7 @@ import numpy as np, h5py
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from matplotlib.backends.backend_pdf import PdfPages
-from Generator import Generator
-
-def Unparalyzable(ts):
-    ind = np.argsort(ts)
-    select = np.zeros(ts.shape, dtype=bool)
-    select[ind[0]] = True
-    tmp_t = ts[ind[0]]
-    for i in range(1, ts.shape[0]):
-        if ts[ind[i]] > (tmp_t + T_Dead):
-            select[ind[i]] = True
-            tmp_t = ts[ind[i]]
-    return select
-
-def Paralyzable(ts):
-    ind = np.argsort(ts)
-    select = np.zeros(ts.shape, dtype=bool)
-    select[ind[0]] = True
-    tmp_t = ts[ind[0]]
-    for i in range(1, ts.shape[0]):
-        if ts[ind[i]] > (tmp_t + T_Dead):
-            select[ind[i]] = True
-            tmp_t = ts[ind[i]]
-        else:
-            # update the deadtime window if the pulse is in the dead time window
-            tmp_t = ts[ind[i]]
-    return select
+from Generator import Generator, Unparalyzable, Paralyzable
 
 T_max = 900
 T_left, T_right = -2*T_max-100, T_max
@@ -75,10 +50,10 @@ sim_meta['num_s'] = Ns_s
 for i in range(N_sample):
     if (Ns_b[i]+Ns_s[i])==0:
         continue
-    select = Unparalyzable(np.concatenate([Ts_b[Ns_b_cum[i]:Ns_b_cum[i+1]], Ts_s[Ns_s_cum[i]:Ns_s_cum[i+1]]]))
+    select = Unparalyzable(np.concatenate([Ts_b[Ns_b_cum[i]:Ns_b_cum[i+1]], Ts_s[Ns_s_cum[i]:Ns_s_cum[i+1]]]), T_Dead)
     sim_b['unpara'][Ns_b_cum[i]:Ns_b_cum[i+1]] = select[:Ns_b[i]]
     sim_s['unpara'][Ns_s_cum[i]:Ns_s_cum[i+1]] = select[Ns_b[i]:]
-    select = Paralyzable(np.concatenate([Ts_b[Ns_b_cum[i]:Ns_b_cum[i+1]], Ts_s[Ns_s_cum[i]:Ns_s_cum[i+1]]]))
+    select = Paralyzable(np.concatenate([Ts_b[Ns_b_cum[i]:Ns_b_cum[i+1]], Ts_s[Ns_s_cum[i]:Ns_s_cum[i+1]]]), T_Dead)
     sim_b['para'][Ns_b_cum[i]:Ns_b_cum[i+1]] = select[:Ns_b[i]]
     sim_s['para'][Ns_s_cum[i]:Ns_s_cum[i+1]] = select[Ns_b[i]:]
 

@@ -1,5 +1,6 @@
-import sys
-sys.path.append('..')
+'''
+Theory calculation of the deadtime with Bondai lightcurve and 900ns deadtime
+'''
 import argparse
 from skpy.DetectorParaReader import BonsaiLikelihoodReader
 import numpy as np
@@ -8,7 +9,7 @@ plt.rc('text', usetex=True)
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.ticker as ticker
 from scipy.interpolate import interp1d
-from ToyMCDeadtime import Unparalyzable
+from Generator import Unparalyzable
 T_Dead = 900
 bonsaiLikelihoodReader = BonsaiLikelihoodReader()
 bonsaiLikelihoodReader.loadH5()
@@ -22,6 +23,7 @@ bonsaiIntegration_fun = interp1d((np.arange(-bonsaiLikelihood.shape[0], 0) + bon
 bonsaiIntegration_reverse_fun = interp1d(bonsaiIntegration, (np.arange(-bonsaiLikelihood.shape[0], 0) + bonsaiLikelihoodReader.offsets[1]) * bonsaiLikelihoodReader.TBIN, bounds_error=False, fill_value=(100, 100))
 
 psr = argparse.ArgumentParser()
+psr.add_argument('-i', dest='ipt', help='input MC hdf5')
 psr.add_argument('-o', dest="opt", help="output file")
 psr.add_argument('--n', dest="n", type=float, help="expected photons")
 psr.add_argument('--dark', dest="dark", type=int, default= 10, help="expected dark rate kHz")
@@ -106,7 +108,13 @@ R_t_corr_cumsum = np.insert(np.cumsum((R_t_corr[-900:-1] + R_t_corr[-899:]) / 2)
 
 integration_Rt_test = 1 - np.exp(-np.cumsum((R_t[-900:-1] + R_t[-899:])/2))
 R_m_t_unparalyzable = R_t[-900:] * (1 - R_b_corr * 900 + R_b_corr*R_t_corr_cumsum) * np.exp(-R_t_cumsum)
-# MC
+# load MC
+'''
+with h5py.File(args.ipt, 'r') as ipt:
+    sim_b = ipt['darknoise'][:]
+    sim_s = ipt['photons'][:]
+    sim_meta = ipt['meta'][:]
+'''
 N_sample = 1000000
 window = 2700
 lambda_t_b = window * R_b
@@ -120,7 +128,7 @@ for i in range(N_sample):
     # assert(Ns_b[i]+Ns_s[i]>0, f"{Ns_b[i]}, {Ns_s[i]}")
     if (Ns_b[i]+Ns_s[i])==0:
         continue
-    select = Unparalyzable(np.concatenate([Ts_b[Ns_b_cum[i]:Ns_b_cum[i+1]], Ts_s[Ns_s_cum[i]:Ns_s_cum[i+1]]]))
+    select = Unparalyzable(np.concatenate([Ts_b[Ns_b_cum[i]:Ns_b_cum[i+1]], Ts_s[Ns_s_cum[i]:Ns_s_cum[i+1]]]), T_Dead)
     select_array_b[Ns_b_cum[i]:Ns_b_cum[i+1]] = select[:Ns_b[i]]
     select_array_s[Ns_s_cum[i]:Ns_s_cum[i+1]] = select[Ns_b[i]:]
 # Theory integration
