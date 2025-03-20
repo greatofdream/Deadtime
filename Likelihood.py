@@ -89,18 +89,24 @@ class NonCorr(Corr):
         self.pmt_b_js = pmt_b_js
 
     def Rt(self, useless_index, hit_index, index_l_int, index_l_frac, index_r_int, index_r_frac, r_max, live_window):
+        self.useless_index = useless_index
         self.hat_hit_R_js = interp(self.Rt_js[np.newaxis, :r_max], index_r_int[hit_index], index_r_frac[hit_index])
         self.hat_lambda_live_js = interp(self.F_Rt_js[np.newaxis, :r_max], index_r_int, index_r_frac) - interp(self.F_Rt_js[np.newaxis, :r_max], index_l_int, index_l_frac)
-        self.pmt_b_js_T = self.pmt_b_js[~useless_index] * live_window
+        self.pmt_b_js_T = self.pmt_b_js * live_window
+        self.index_l_int, self.index_l_frac = index_l_int, index_l_frac
+        self.index_r_int, self.index_r_frac = index_r_int, index_r_frac
 
     def NeffLikelihood_T(self, xs, *args):
         neff = xs
-        self.Rt_m_js = neff * self.Rt_js[np.newaxis, :r_max] + pmt_b_js
-        pmt_k_js, useless_index, hit_index = args
-        pmt_K_js = neff * pmt_k_js
+        # self.Rt_m_js = neff * self.Rt_js[np.newaxis, :r_max] + pmt_b_js
+        hit_index = args[0]
+        pmt_K_js = neff
         # expected photon number * lc + b
         # likelihood_j = R_m(t)*(1-lambda_live)
-        likelihood = np.sum(pmt_K_js * self.hat_lambda_live_js + self.pmt_b_js_T) - np.sum(np.log(pmt_K_js[hit_index] * self.hat_hit_R_js + self.pmt_b_js[~useless_index][hit_index]))
+        # hit part
+        likelihood = np.sum(pmt_K_js * self.hat_lambda_live_js[hit_index][~self.useless_index] + self.pmt_b_js_T[hit_index][~self.useless_index]) - np.sum(np.log(pmt_K_js * self.hat_hit_R_js[~self.useless_index] + self.pmt_b_js))
+        # nonhit part
+        likelihood += np.sum(pmt_K_js * self.hat_lambda_live_js[~hit_index] + self.pmt_b_js_T[~hit_index])
         return likelihood
 
     def NeffLikelihood_TQ(self, xs, *args):
@@ -154,7 +160,7 @@ class CorrParalyzable(Corr):
         if self.nohitN!=0:
             self.Rt_m(pmt_K_js, hit_index)
             # likelihood += - self.nohitN * np.log(1 - (np.exp(-pmt_K_js * self.F_R_js_tl) - np.exp(-pmt_K_js * self.F_R_js_tr)) * np.exp(-self.pmt_b_js_T))[0]
-            likelihood += - self.nohitN * np.log(1 - (np.exp(-pmt_K_js * self.F_R_js_tl) - np.exp(-pmt_K_js * self.F_R_js_tr) + self.pmt_b_js * self.F_exp_R_js) * np.exp(-self.pmt_b_js_T) - self.pmt_b_corr_js_prewindow[~hit_index][0])
+            likelihood += - self.nohitN * np.log(1 - (np.exp(-pmt_K_js * self.F_R_js_tl) - np.exp(-pmt_K_js * self.F_R_js_tr) + self.pmt_b_js * self.F_exp_R_js) * np.exp(-self.pmt_b_js_T) - self.pmt_b_corr_js_prewindow[~hit_index][0])[0]
         # expected photon number * lc + b
         # likelihood_j = nonhit probability
         # + R_m(t)*(1-lambda_live)
