@@ -92,7 +92,7 @@ def recon(paralabel='unpara', estimate_b_corr=estimate_b_corr_unpara, use_truth=
         # useless_index is not used in this test benchmark
         minimizeObj.Rt(useless_index, hit_index, index_l_int, index_l_frac, index_r_int, index_r_frac, r_max, window_r - window_l + noise_pre_window)
 
-    bounds = [0.01, 30]
+    bounds = [0.01, 50]
     occupancy = np.sum(hit_index) / Entries
     Neff_estimate = occupancy * np.exp(occupancy)
     #print(occupancy, Neff_estimate)

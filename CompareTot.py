@@ -38,15 +38,15 @@ with PdfPages(args.opt + '.pdf') as pdf:
     fig_unpara, ax_unpara = plt.subplots()
     fig_para, ax_para = plt.subplots()
     for (dn, rows), c in zip(res_df.groupby('DN'), colors):
-        ax_unpara.scatter(rows['mu_truth'], rows['mu_unpara']/rows['mu_truth']-1, s=8, c=c, label='$L^{para}$'+' DN{}kHz'.format(dn))
-        ax_unpara.scatter(rows['mu_truth'], rows['mu_unpara_first']/rows['mu_truth']-1, s=8, c=c, marker='x', label='$L^{first}$'+' DN{}kHz'.format(dn))
-        ax_para.scatter(rows['mu_truth'], rows['mu_para']/rows['mu_truth']-1, s=8, c=c, label='$L^{para}$'+' DN{}kHz'.format(dn))
-        ax_para.scatter(rows['mu_truth'], rows['mu_para_first']/rows['mu_truth']-1, s=8, c=c, marker='x', label='$L^{first}$'+' DN{}kHz'.format(dn))
-    [(ax.set_ylabel(r'$\Delta \lambda/\lambda$'),
+        ax_unpara.scatter(rows['mu_truth'], rows['mu_unpara']/rows['mu_truth']-1, s=10, c=c, label='$L^{para}$'+' DN{}kHz'.format(dn))
+        ax_unpara.scatter(rows['mu_truth'], rows['mu_unpara_first']/rows['mu_truth']-1, s=10, c=c, marker='x', label='$L^{first}$'+' DN{}kHz'.format(dn))
+        ax_para.scatter(rows['mu_truth'], rows['mu_para']/rows['mu_truth']-1, s=10, c=c, label='$L^{para}$'+' DN{}kHz'.format(dn))
+        ax_para.scatter(rows['mu_truth'], rows['mu_para_first']/rows['mu_truth']-1, s=10, c=c, marker='x', label='$L^{first}$'+' DN{}kHz'.format(dn))
+    [(ax.set_ylabel(r'$\Delta \mu/\mu$'),
         ax.xaxis.set_minor_locator(MultipleLocator(1)),
         ax.yaxis.set_minor_locator(MultipleLocator(0.01)),
-        ax.set_xlabel(r'$\lambda$'),
-        ax.set_xlim([0,26]),
+        ax.set_xlabel(r'$\mu$'),
+        ax.set_xlim([0, 41]),
         ax.legend()
       ) for ax in [ax_unpara, ax_para]]
     pdf.savefig(fig_unpara)
