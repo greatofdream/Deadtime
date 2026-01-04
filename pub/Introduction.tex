@@ -1,34 +1,44 @@
 \section{Introduction}
 
-Due to the processes of the detector (e.g. avalance in Geiger tube~\cite{}, discharge in the nerve fiber~\cite{miller:1985algorithms,bi:1989closedform,}) or the associated electronics (e.g. decharge of QDC~\cite{}), the events in a time interval (\textit{dead time}) following a preceding event are omit~\cite{Knoll:2000fj}. 
-There are two basic types of the dead time behavior: \textit{paralyzable} and \textit{nonparalyzable} response~\cite{müller1973deadtime,muller:1994,Knoll:2000fj}. The true events in the fixed dead time $T_D$ are lost and does not affect the length of the dead time for the nonparalyzable response. While for the paralyzable response, the dead time is still $T_D$ for an observed event but the dead interval will be extended by the true event in the dead period with another dead time $T_D$ as shown in Fig.~\ref{}.
-The homogeneous Poisson process describes the counting process with a constant event rate $R$ for the infinite timing scale. The observed rate $R^m$ for the paralyzable and nonparalyzable response are~\cite{muller:1994}
+Due to the processes of the detector (e.g. avalanche in Geiger tube~\cite{Knoll:2000fj}, avalanche and quenching in Geiger-Mode Avalanche Photodiode (GM-APD)~\cite{gatt2009geigermode,renker2006geigermode}, discharge in the nerve fiber~\cite{bi:1989closedform,miller:1985algorithms}) or the associated electronics (e.g. decharge of QDC~\cite{Nishino:2009zu}), the events in a time interval (\textit{dead time}) following a preceding event are omit~\cite{Knoll:2000fj}. 
+
+There are two basic types of the dead time behavior: \textbf{paralyzable} and \textbf{nonparalyzable} response~\cite{Knoll:2000fj,müller1973deadtime,muller:1994}. The true events in the dead time interval $[t_0, t_0+T_D]$ are lost and does not affect the length of the dead time for the nonparalyzable response. While for the paralyzable response, the dead time is still $T_D$ for an observed event but the dead interval will be extended by the true event in the dead period with another dead time $T_D$ as shown in Fig.~\ref{}. Althogh $T_D$ is handled as random variable in some publication~\cite{Peterson:2021numerical} as a geometric distribution, we still focus on the case with a constant $T_D$ in this paper for simplicity.
+
+The \textbf{homogeneous Poisson process} describes the counting process with a constant \textbf{arrival event} rate $R$ for the infinite timing scale. The \textbf{observed rate} $R^m$ for the paralyzable and nonparalyzable response are~\cite{muller:1994}
 \begin{equation}
 \begin{aligned}
-	R^{m,\mathrm{para}}&=Re^{-RT_\mathrm{dead}}\\
+	R^{m,\mathrm{para}}&=Re^{-RT_D}\\
 	R^{m,\mathrm{non}}&=\frac{R}{1+RT_D}
 \end{aligned}.
 \label{equ:homogeneous_deadtime}
 \end{equation}
 
-To inference the $R$ from $R^{m,\mathrm{para}}$ need to solve the Equ.~\eqref{equ:homogeneous_deadtime}, which could be approximated with the series and there exist two possible solutions for the $R$~\cite{muller:1994}. 
-For the nonparalyzable response, the observed rate is $R=R^{m,\mathrm{non}}/(1-R^{m,\mathrm{non}}T_D)$, which is the corollary of Equ.~\eqref{equ:homogeneous_deadtime}.
+It is hard to infer the $R$ from $R^{m,\mathrm{para}}$, which could be approximated with the series and there exist two possible solutions for the $R$~\cite{muller:1994} by solving the Equ.~\eqref{equ:homogeneous_deadtime}.
+While for the nonparalyzable response, $R=R^{m,\mathrm{non}}/(1-R^{m,\mathrm{non}}T_D)$, which is the corollary of Equ.~\eqref{equ:homogeneous_deadtime}.
 
 For the finite trains of pulse with a const event rate in the interval $[0,T]$ of the nonparalyzable response, Cormack gave a relationship between the probability $P_n(T)$ of the $n$ observed pulses existing in the interval and the probability $P_n(T|t_{0}=0)$ when a hit exist in $t=0$ ~\cite{Cormack:1962}:
 \begin{equation}
-P_n(T) = P_n(T+T_D|t_{0}=0)
+P_n(T) = P_n(T+T_D|t_{0}=0).
 \end{equation}
 The mean observed event rate is~\cite{Cormack:1962}:
 \begin{equation}
-\overline{R}^m=\sum_{n=1}^{n_\mathrm{max}}{nP_n(T)}
+\overline{R}^m=\sum_{n=1}^{n_\mathrm{max}}{nP_n(T)},
 \end{equation}
 in which $(n_\mathrm{max}-1)T_D<T<n_\mathrm{max}T_D$.
 
-Many fields considers the time dependent signal intensity corrected by the dead time. The inhomogeneous Poisson process is suitable for the event rate varies versus time $R(t)$~\cite{}. The self-exciting Poisson process is used to model the observed event rate~\cite{bi:1989closedform}, which is the product of Poisson process and correction term. Bi gave the closed form of $R(t)$ inferenced from $R^m(t)$ with the known correction term which is hard to estimate. However, the correction term in the paralyzable and nonparalyzable response is correlated with the $R(t)$. Miller gave an algorithm for estimate $R(t)$ and $r(t)$ with a fixed expression of $r(t)$~\cite{miller:1985algorithms}.
+Many fields considers the time dependent arrival event signal intensity, which is described by \textbf{inhomogeneous Poisson process} $R(t)$~\cite{rapp2019dead}, corrected by the dead time with observed event rate $R^m(t)$. The observed events is a single-memory self-exciting point process~\cite{miller:1985algorithms,snyder1991random}. The probability of a sequence $\mathbf{W}$ sampled from the counting process ${N(t):0<t<T}$ in the interval $[0, T)$ is~\cite{miller:1985algorithms,snyder1991random}
+\begin{equation}
+	p=\exp{\left(-\int_0^T{\lambda(t;\mathrm{W})\dif t}+\int_0^T{\ln{\left[\lambda(t;\mathrm{W})\right]}\dif N(t)}\right)}.
+\end{equation}
+% self-exciting / renewal process
+Miller gave an EM MLE algorithm to estimate $R(t)$ with the repeated observation of $\mathbf{W}$~\cite{miller:1985algorithms}.
+However, the correction term in the paralyzable and nonparalyzable response is correlated with the $R(t)$. 
 
 Vannucci et.al. use $\overline{R}^{m,\mathrm{non}}=\int_{t_l}^{t_r}{R(t)/\left(1+R(t)T_D\right)dt}$ to approximate the expected number and variance of observed events in the interval $[t_l,t_r]$ for the nonparalyzable response~\cite{Vannucci:1978,Vannucci:1981}, which is under the assumption of slow variance of the $R(t)$. This coarse approximation is used or mentioned by some old publicationabout doubly stochastic Poisson process with dead time~\cite{Saleh:1981,Teich:2000}.
 
-The statistical properties of point processes are often investiaged using interval distribution~\cite{}. The focus of previous research is the interval densities and the counting statistics of the observed event number is , which of the paralyzable and nonparalyzable response for the homogeneous Poisson process summarized by Muller using the renewal processes~\cite{müller1973deadtime,muller:1994,yu:2000mean,pomme:2015uncertainty}. The interval densities is useful for the system without storing timestamps.
+Miller used the MLE method to estimate the $R(t)$
+
+The statistical properties of point processes are often investiaged using interval distribution~\cite{}. The self-exciting Poisson process is used to model the $R^m(t)$ as the product of Poisson process and recovery function as the correction term in nerve fibers~\cite{gaumond1982stimulus,bi:1989closedform,}, in which a closed-form $R(t)$ is inferenced from $R^m(t)$ with the known correction term which is hard to estimate. The focus of previous research is the interval densities and the counting statistics of the observed event number is , which of the paralyzable and nonparalyzable response for the homogeneous Poisson process summarized by Muller using the renewal processes~\cite{müller1973deadtime,muller:1994,yu:2000mean,pomme:2015uncertainty}. The interval densities is useful for the system without storing timestamps.
 
 The close form of the interval densities of inhomogeneous Poisson process is difficult to obtain except in very specific cases~\cite{Picinbono:2009output}. Picinbono discussed a recursive method to calculate the interval distribution. The interval distribution with random dead times is calculated using numerical method by Peterson et.al~\cite{Peterson:2021numerical}. However, the expression of $R^m(t)$ is useful to constructed likelihood but there is no similar research.
 
