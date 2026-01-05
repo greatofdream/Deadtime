@@ -28,15 +28,17 @@ in which $(n_\mathrm{max}-1)T_D<T<n_\mathrm{max}T_D$.
 
 Many fields considers the time dependent arrival event signal intensity, which is described by \textbf{inhomogeneous Poisson process} $R(t)$~\cite{rapp2019dead}, corrected by the dead time with observed event rate $R^m(t)$. The observed events is a single-memory self-exciting point process~\cite{miller:1985algorithms,snyder1991random}. The probability of a sequence $\mathbf{W}$ sampled from the counting process ${N(t):0<t<T}$ in the interval $[0, T)$ is~\cite{miller:1985algorithms,snyder1991random}
 \begin{equation}
-	p=\exp{\left(-\int_0^T{\lambda(t;\mathrm{W})\dif t}+\int_0^T{\ln{\left[\lambda(t;\mathrm{W})\right]}\dif N(t)}\right)}.
+	p=\exp{\left(-\int_0^T{\lambda(t;\mathrm{W})\dif t}+\int_0^T{\ln{\left[\lambda(t;\mathrm{W})\right]}\dif N(t)}\right)},
+	\label{equ:mle}
 \end{equation}
+in which $[0, T)$ is not overlapped by any dead time before the interval.
 % self-exciting / renewal process
-Miller gave an EM MLE algorithm to estimate $R(t)$ with the repeated observation of $\mathbf{W}$~\cite{miller:1985algorithms}.
+Miller calculate the MLE of $R(t)$ via an EM algorithm on Equ.~\eqref{equ:mle} with the repeated observation of $\mathbf{W}$~\cite{miller:1985algorithms}. The method could be used by adjust the left endpoint when there exist overlapped interval in following section.
+
 However, the correction term in the paralyzable and nonparalyzable response is correlated with the $R(t)$. 
 
 Vannucci et.al. use $\overline{R}^{m,\mathrm{non}}=\int_{t_l}^{t_r}{R(t)/\left(1+R(t)T_D\right)dt}$ to approximate the expected number and variance of observed events in the interval $[t_l,t_r]$ for the nonparalyzable response~\cite{Vannucci:1978,Vannucci:1981}, which is under the assumption of slow variance of the $R(t)$. This coarse approximation is used or mentioned by some old publicationabout doubly stochastic Poisson process with dead time~\cite{Saleh:1981,Teich:2000}.
 
-Miller used the MLE method to estimate the $R(t)$
 
 The statistical properties of point processes are often investiaged using interval distribution~\cite{}. The self-exciting Poisson process is used to model the $R^m(t)$ as the product of Poisson process and recovery function as the correction term in nerve fibers~\cite{gaumond1982stimulus,bi:1989closedform,}, in which a closed-form $R(t)$ is inferenced from $R^m(t)$ with the known correction term which is hard to estimate. The focus of previous research is the interval densities and the counting statistics of the observed event number is , which of the paralyzable and nonparalyzable response for the homogeneous Poisson process summarized by Muller using the renewal processes~\cite{müller1973deadtime,muller:1994,yu:2000mean,pomme:2015uncertainty}. The interval densities is useful for the system without storing timestamps.
 
