@@ -26,26 +26,31 @@ The mean observed event rate is~\cite{Cormack:1962}:
 \end{equation}
 in which $(n_\mathrm{max}-1)T_D<T<n_\mathrm{max}T_D$.
 
-Many fields considers the time dependent arrival event signal intensity, which is described by \textbf{inhomogeneous Poisson process} $R(t)$~\cite{rapp2019dead}, corrected by the dead time with observed event rate $R^m(t)$. The observed events is a single-memory self-exciting point process~\cite{miller:1985algorithms,snyder1991random}. The probability of a sequence $\mathbf{W}$ sampled from the counting process ${N(t):0<t<T}$ in the interval $[0, T)$ is~\cite{miller:1985algorithms,snyder1991random}
+Many fields considers the time dependent arrival event signal intensity, which is described by \textbf{inhomogeneous Poisson process} $R(t)$~\cite{rapp2019dead}, corrected by the dead time with observed event rate $R^m(t)$. The observed events is a single-memory self-exciting point process~\cite{miller:1985algorithms,snyder1991random}. The probability of a sequence $\mathbf{W}$ with nonparalyzable dead time sampled from the counting process ${N(t):0<t<T}$ in the interval $[0, T)$ is~\cite{miller:1985algorithms,snyder1991random}
 \begin{equation}
-	p=\exp{\left(-\int_0^T{\lambda(t;\mathrm{W})\dif t}+\int_0^T{\ln{\left[\lambda(t;\mathrm{W})\right]}\dif N(t)}\right)},
+	p=\exp{\left(-\int_0^T{\lambda(t;\mathbf{W})\dif t}+\int_0^T{\ln{\left[\lambda(t;\mathbf{W})\right]}\dif N(t)}\right)},
 	\label{equ:mle}
 \end{equation}
 in which $[0, T)$ is not overlapped by any dead time before the interval.
 % self-exciting / renewal process
 Miller calculate the MLE of $R(t)$ via an EM algorithm on Equ.~\eqref{equ:mle} with the repeated observation of $\mathbf{W}$~\cite{miller:1985algorithms}. The method could be used by adjust the left endpoint when there exist overlapped interval in following section.
 
-However, the correction term in the paralyzable and nonparalyzable response is correlated with the $R(t)$. 
+However, MLE method requires an entire hit history. Bi et.al implemented the dead time effect as the product of Poisson process and recovery function as the correction term~\cite{bi:1989closedform,gaumond1982stimulus} to recover $R(t)$ from time histogram of $R^m(t)$, which is constructed with many independent measurements:
+\begin{equation}
+	R^m(t)=R(t)\left[1-\int_0^t{q(t-u)R^m(u)e^{-\int_u^t{R(y)(1-q(y-u))\dif y}}\dif u}\right],
+\end{equation}
+in which the recovery shape function $q(t)$ is a unit step function for a fixed dead time and $R^m(t)=R(t)(1-\int_{t-T_D}^t{R^m(u)\dif u})$~\cite{bi:1989closedform}.
 
-Vannucci et.al. use $\overline{R}^{m,\mathrm{non}}=\int_{t_l}^{t_r}{R(t)/\left(1+R(t)T_D\right)dt}$ to approximate the expected number and variance of observed events in the interval $[t_l,t_r]$ for the nonparalyzable response~\cite{Vannucci:1978,Vannucci:1981}, which is under the assumption of slow variance of the $R(t)$. This coarse approximation is used or mentioned by some old publicationabout doubly stochastic Poisson process with dead time~\cite{Saleh:1981,Teich:2000}.
+Vannucci et.al. used $\overline{R}^{m,\mathrm{non}}=\int_{t_l}^{t_r}{R(t)/\left(1+R(t)T_D\right)\dif t}$ to approximate the expected number and variance of observed events in the interval $[t_l,t_r]$ for the nonparalyzable response~\cite{Vannucci:1981,Vannucci:1978}, which is under the assumption of slow variance of the $R(t)$. This coarse approximation is used or mentioned by some old publication about doubly stochastic Poisson process with dead time~\cite{Saleh:1981,Teich:2000}.
 
+% interval density
+The statistical properties of point processes are also investigated using interval distribution. The focus of previous research is the interval densities and the counting statistics of the observed event number is , which of the paralyzable and nonparalyzable response for the homogeneous Poisson process summarized by Muller using the renewal processes~\cite{müller1973deadtime,muller:1994,yu:2000mean,pomme:2015uncertainty}. The interval densities is useful for the system without storing timestamps.
 
-The statistical properties of point processes are often investiaged using interval distribution~\cite{}. The self-exciting Poisson process is used to model the $R^m(t)$ as the product of Poisson process and recovery function as the correction term in nerve fibers~\cite{gaumond1982stimulus,bi:1989closedform,}, in which a closed-form $R(t)$ is inferenced from $R^m(t)$ with the known correction term which is hard to estimate. The focus of previous research is the interval densities and the counting statistics of the observed event number is , which of the paralyzable and nonparalyzable response for the homogeneous Poisson process summarized by Muller using the renewal processes~\cite{müller1973deadtime,muller:1994,yu:2000mean,pomme:2015uncertainty}. The interval densities is useful for the system without storing timestamps.
-
-The close form of the interval densities of inhomogeneous Poisson process is difficult to obtain except in very specific cases~\cite{Picinbono:2009output}. Picinbono discussed a recursive method to calculate the interval distribution. The interval distribution with random dead times is calculated using numerical method by Peterson et.al~\cite{Peterson:2021numerical}. However, the expression of $R^m(t)$ is useful to constructed likelihood but there is no similar research.
+The close form of the interval densities of inhomogeneous Poisson process is difficult to obtain except in very specific cases~\cite{Picinbono:2009output}. Picinbono discussed a recursive method to calculate the interval distribution. The interval distribution with random dead times is calculated using numerical method by Peterson et.al~\cite{Peterson:2021numerical}.
 
 Verma .et.al used MCMC method to inference $R(t)$ from the observed events with random dead times, which works not well for high flux~\cite{Verma:2017inhomogeneous}.
 
 % other reseachs about dead time: Combination of the dead times
+Some research of GM-APD require low flux and introduce the detection efficiency to correct the nonparalyzable dead time effect~\cite{gatt2009geigermode}. A simple case when signal at $m$-th bin of paralyzable dead time response is discussed by Liu et.al. ~\cite{liu2021photon}.
 
-In this work we concentrate on the fix dead time. Sec.2 gives the precise expression of the $R^m(t)$ for the paralyzable and nonparalyzable response. Sec.3. elucidate the method to inference the true event rate $R(t)$ with the impressive performance. Finally, the conclusion and prospect are shown in Sec.
+In this work we concentrate on the independent measurements with different intensity factors and a fix dead time. Sec.2 gives the precise expression of the $R^m(t)$ for the paralyzable and nonparalyzable response. Sec.3. elucidate the method to inference the true event rate $R(t)$ with the impressive performance. Finally, the conclusion and prospect are shown in Sec.
