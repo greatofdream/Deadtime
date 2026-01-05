@@ -41,6 +41,10 @@ However, MLE method requires an entire hit history. Bi et.al implemented the dea
 \end{equation}
 in which the recovery shape function $q(t)$ is a unit step function for a fixed dead time and $R^m(t)=R(t)(1-\int_{t-T_D}^t{R^m(u)\dif u})$~\cite{bi:1989closedform}.
 
+As for the periodic arrival event rate, which is different from independent measurements, the observed event rate would be affected by the events in the former period~\cite{rapp2019dead,rapp2021highflux}.
+Some research of GM-APD require low flux and introduce the detection efficiency to correct the nonparalyzable dead time effect~\cite{gatt2009geigermode}. A simple case when signal at $m$-th bin of paralyzable dead time response is discussed by Liu et.al. ~\cite{liu2021photon}.
+
+
 Vannucci et.al. used $\overline{R}^{m,\mathrm{non}}=\int_{t_l}^{t_r}{R(t)/\left(1+R(t)T_D\right)\dif t}$ to approximate the expected number and variance of observed events in the interval $[t_l,t_r]$ for the nonparalyzable response~\cite{Vannucci:1981,Vannucci:1978}, which is under the assumption of slow variance of the $R(t)$. This coarse approximation is used or mentioned by some old publication about doubly stochastic Poisson process with dead time~\cite{Saleh:1981,Teich:2000}.
 
 % interval density
@@ -51,6 +55,4 @@ The close form of the interval densities of inhomogeneous Poisson process is dif
 Verma .et.al used MCMC method to inference $R(t)$ from the observed events with random dead times, which works not well for high flux~\cite{Verma:2017inhomogeneous}.
 
 % other reseachs about dead time: Combination of the dead times
-Some research of GM-APD require low flux and introduce the detection efficiency to correct the nonparalyzable dead time effect~\cite{gatt2009geigermode}. A simple case when signal at $m$-th bin of paralyzable dead time response is discussed by Liu et.al. ~\cite{liu2021photon}.
-
 In this work we concentrate on the independent measurements with different intensity factors and a fix dead time. Sec.2 gives the precise expression of the $R^m(t)$ for the paralyzable and nonparalyzable response. Sec.3. elucidate the method to inference the true event rate $R(t)$ with the impressive performance. Finally, the conclusion and prospect are shown in Sec.
